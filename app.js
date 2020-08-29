@@ -11,7 +11,10 @@ const startServer = async () => {
     .then(() => console.log("DataBase is connected"))
     .catch((err) => console.log(err));
 
-  //ROUTES
+  //NON-ROUTE MIDDLEWARE
+  app.use(express.json());
+
+  //ROUTES MIDDLEWARE
   app.use("/auth", require("./routes/authentication"));
 
   //START APP

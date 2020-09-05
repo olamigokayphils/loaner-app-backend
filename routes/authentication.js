@@ -19,20 +19,25 @@ router.post("/register", async (req, res) => {
   if (error) {
     res.send(error.details[0].message);
   } else {
-    const user = new User({
-      phoneNumber: req.body.phoneNumber,
-      fullname: req.body.fullname,
-      email: req.body.email,
-      state: req.body.state,
-      dob: req.body.dob,
-      password: req.body.password,
-    });
-    try {
-      // Save User to Database
-      const savedUser = await user.save();
-      res.send(savedUser);
-    } catch (err) {
-      res.status(500).send(err);
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      res.send("User email already registered");
+    } else {
+      const user = new User({
+        phoneNumber: req.body.phoneNumber,
+        fullname: req.body.fullname,
+        email: req.body.email,
+        state: req.body.state,
+        dob: req.body.dob,
+        password: req.body.password,
+      });
+      try {
+        // Save User to Database
+        const savedUser = await user.save();
+        res.send(savedUser);
+      } catch (err) {
+        res.status(500).send(err);
+      }
     }
   }
 });

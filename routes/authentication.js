@@ -1,43 +1,60 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Joi = require("@hapi/joi");
+const { registerValidationSchema, loginValidationSchema } = require("../validations/validations");
 const { schema } = require("../models/User");
-
-//REGISTRATION VALIDATION
-const registerValidationSchema = Joi.object({
-  phoneNumber: Joi.string().min(11).max(11).required(),
-  fullname: Joi.string().min(4).required(),
-  email: Joi.string().min(6).required().email(),
-  state: Joi.string().min(3).required(),
-  dob: Joi.date().required(),
-  password: Joi.string().min(6),
-});
+const bcrpyt = require("bcrypt");
 
 router.post("/register", async (req, res) => {
   //VALIDATE USERS' REQUEST
   const { error } = registerValidationSchema.validate(req.body);
   if (error) {
-    res.send(error.details[0].message);
+    return res.send(error.details[0].message);
   } else {
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
-      res.send("User email already registered");
+      return res.status(400).send("User email already registered");
     } else {
+      // HASH PASSWORD
+      const salt = await bcrpyt.genSalt(10);
+      const hashedPassword = await bcrpyt.hash(req.body.password, salt);
+
       const user = new User({
         phoneNumber: req.body.phoneNumber,
         fullname: req.body.fullname,
         email: req.body.email,
         state: req.body.state,
         dob: req.body.dob,
-        password: req.body.password,
+        password: hashedPassword,
       });
       try {
         // Save User to Database
         const savedUser = await user.save();
-        res.send(savedUser);
+        return res.send(savedUser);
       } catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
       }
+    }
+  }
+});
+
+router.post("/login", async (req, res) => {
+  // VALIDATE USERS' REQUEST
+  const { error } = loginValidationSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  } else {
+    //CHECK IF THE USER EXIST
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      // CHECK USER PASSWORD
+      const validPassword = await bcrpyt.compare(req.body.password, existingUser.password);
+      if (validPassword) {
+        return res.send("Login Success");
+      } else {
+        return res.status(400).send("Email and/or Password is wrong");
+      }
+    } else {
+      res.status(400).send("Email and/or Password is wrong");
     }
   }
 });

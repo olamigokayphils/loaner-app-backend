@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidationSchema, loginValidationSchema } = require("../validations/validations");
-const { schema } = require("../models/User");
 const bcrpyt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
   //VALIDATE USERS' REQUEST
@@ -49,13 +49,33 @@ router.post("/login", async (req, res) => {
       // CHECK USER PASSWORD
       const validPassword = await bcrpyt.compare(req.body.password, existingUser.password);
       if (validPassword) {
-        return res.send("Login Success");
+        // ASSIGN A TOKEN TO USER
+        const token = jsonwebtoken.sign(
+          {
+            _id: existingUser._id,
+            fullname: existingUser.fullname,
+          },
+          process.env.JSON_WEB_TOKE_KEY
+        );
+        return res.header("Authorization-Token", token).json({ status: "success", token: token });
       } else {
         return res.status(400).send("Email and/or Password is wrong");
       }
     } else {
       res.status(400).send("Email and/or Password is wrong");
     }
+  }
+});
+
+router.get("/user", async (req, res) => {
+  const token = req.header("Authorization-Token");
+  if (!token) return res.status(401).json({ message: "Unauthorized resource" });
+
+  try {
+    const verified = jsonwebtoken.verify(token, process.env.JSON_WEB_TOKE_KEY);
+    res.json({ user: verified });
+  } catch (err) {
+    res.status(400).send("Invalid Authorization details");
   }
 });
 

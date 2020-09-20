@@ -1,11 +1,16 @@
-const jsonwebtoken = require("jsonwebtoken");
+const redis = require("redis");
+const JWTR = require("jwt-redis").default;
+const redisClient = redis.createClient();
+const jwtr = new JWTR(redisClient);
+//const jsonwebtoken = require("jsonwebtoken");
 
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
   const token = req.header("Authorization-Token");
   if (!token) return res.status(401).send("Unauthorized resource");
 
   try {
-    const verified = jsonwebtoken.verify(token, process.env.JSON_WEB_TOKE_KEY);
+    const verified = await jwtr.verify(token, process.env.JSON_WEB_TOKE_KEY);
+    console.log(verified);
     req.user = verified;
     next();
   } catch (err) {

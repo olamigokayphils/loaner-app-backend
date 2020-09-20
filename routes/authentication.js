@@ -2,7 +2,12 @@ const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidationSchema, loginValidationSchema } = require("../validations/validations");
 const bcrpyt = require("bcrypt");
-const jsonwebtoken = require("jsonwebtoken");
+//const jsonwebtoken = require("jsonwebtoken");
+
+const redis = require("redis");
+const JWTR = require("jwt-redis").default;
+const redisClient = redis.createClient();
+const jwtr = new JWTR(redisClient);
 
 router.post("/register", async (req, res) => {
   //VALIDATE USERS' REQUEST
@@ -50,7 +55,7 @@ router.post("/login", async (req, res) => {
       const validPassword = await bcrpyt.compare(req.body.password, existingUser.password);
       if (validPassword) {
         // ASSIGN A TOKEN TO USER
-        const token = jsonwebtoken.sign(
+        const token = await jwtr.sign(
           {
             _id: existingUser._id,
             fullname: existingUser.fullname,
@@ -72,8 +77,22 @@ router.get("/user", async (req, res) => {
   if (!token) return res.status(401).json({ message: "Unauthorized resource" });
 
   try {
-    const verified = jsonwebtoken.verify(token, process.env.JSON_WEB_TOKE_KEY);
+    const verified = jwtr.verify(token, process.env.JSON_WEB_TOKE_KEY);
     res.json({ user: verified });
+  } catch (err) {
+    res.status(400).send("Invalid Authorization details");
+  }
+});
+
+router.post("/logout", async (req, res) => {
+  const token = req.header("Authorization-Token");
+  if (!token) return res.status(401).json({ message: "Unauthorized resource" });
+
+  try {
+    // VERFIY TOKEN
+    const verified = await jwtr.decode(token, process.env.JSON_WEB_TOKE_KEY);
+    await jwtr.destroy(verified.jti);
+    res.status(200).json({ message: "Logout successful" });
   } catch (err) {
     res.status(400).send("Invalid Authorization details");
   }

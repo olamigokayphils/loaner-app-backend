@@ -7,9 +7,11 @@ const loanSchema = new mongoose.Schema({
   },
   approvalDate: {
     type: Date,
+    default: "",
   },
   maturityDate: {
     type: Date,
+    default: "",
   },
   amount: {
     type: Number,

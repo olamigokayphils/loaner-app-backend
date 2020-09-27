@@ -16,4 +16,9 @@ const loginValidationSchema = Joi.object({
   password: Joi.string().min(6),
 });
 
-module.exports = { registerValidationSchema, loginValidationSchema };
+// LOAN APPLICATION VALIDATION
+const loanApplicationValidationSchema = Joi.object({
+  amount: Joi.number().min(1000).max(50000).required(),
+});
+
+module.exports = { registerValidationSchema, loginValidationSchema, loanApplicationValidationSchema };

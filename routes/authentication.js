@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
           },
           process.env.JSON_WEB_TOKE_KEY
         );
-        return res.header("Authorization-Token", token).json({ status: "success", token: token });
+        return res.header("Authorization-Token", token).json({ status: "success", token: token, _id: existingUser._id, fullname: existingUser.fullname });
       } else {
         return res.status(400).send("Email and/or Password is wrong");
       }
@@ -77,8 +77,11 @@ router.get("/user", async (req, res) => {
   if (!token) return res.status(401).json({ message: "Unauthorized resource" });
 
   try {
-    const verified = jwtr.verify(token, process.env.JSON_WEB_TOKE_KEY);
-    res.json({ user: verified });
+    const verified = await jwtr.verify(token, process.env.JSON_WEB_TOKE_KEY);
+    res.json({
+      _id: verified._id,
+      fullname: verified.fullname,
+    });
   } catch (err) {
     res.status(400).send("Invalid Authorization details");
   }

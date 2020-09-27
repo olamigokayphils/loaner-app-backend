@@ -10,7 +10,6 @@ module.exports = async function (req, res, next) {
 
   try {
     const verified = await jwtr.verify(token, process.env.JSON_WEB_TOKE_KEY);
-    console.log(verified);
     req.user = verified;
     next();
   } catch (err) {

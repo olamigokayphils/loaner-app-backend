@@ -25,6 +25,13 @@ router.post("/request-loan", verifyToken, async (req, res) => {
     const loanAmount = req.body.amount;
 
     // CHECK IF USER HAS A PENDING/DEFAULTING LOAN
+    const allLoans = existingUser.loans;
+    if (allLoans.length > 0) {
+      const lastLoan = allLoans[allLoans.length - 1];
+      if (lastLoan.status !== "paid") {
+        return res.json({ status: "failed", message: "Cannot request new Loan!. You have a pending payment" });
+      }
+    }
 
     // ADD LOAN TO USERS RECORD
     existingUser.loans.push({ amount: loanAmount });

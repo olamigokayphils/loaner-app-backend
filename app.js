@@ -6,6 +6,7 @@ const cors = require("cors");
 require("dotenv").config();
 const session = require("express-session");
 const passport = require("passport");
+const flash = require("connect-flash")
 
 const SERVER_PORT_NO = process.env.PORT || 5500;
 
@@ -28,6 +29,16 @@ require("./validations/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+// SETUP CONNECT FLASH
+app.use(flash())
+
+//GLOBAL FLASH MESSAGES == > Errors
+app.use((req, res, next) => {
+  res.locals.error = req.flash("error");
+  next()
+})
+
 const startServer = async () => {
   await mongoose
     .connect(process.env.DATABASE_URI, { useUnifiedTopology: true, useNewUrlParser: true })
@@ -36,7 +47,11 @@ const startServer = async () => {
 
   //NON-ROUTE MIDDLEWARE
   app.use(cors());
+  // BODY PARSER => application/json
   app.use(express.json());
+  // BODY PARSER => application/x-www-form-urlencoded
+  app.use(express.urlencoded({ extended: true }));
+
 
   //ROUTES MIDDLEWARE
   app.use("/admin", require("./routes/admin"));

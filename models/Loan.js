@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const userSchema = require("./User").schema;
 
 const loanSchema = new mongoose.Schema({
+  user: userSchema,
   requestDate: {
     type: Date,
     default: Date.now,

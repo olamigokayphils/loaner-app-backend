@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const loanSchema = require("./Loan").schema;
-
 const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
@@ -32,7 +30,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 6,
   },
-  loans: [loanSchema],
   balance: {
     type: Number,
     default: "0.00",

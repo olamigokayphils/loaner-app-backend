@@ -3,7 +3,7 @@ module.exports = {
     if (req.isAuthenticated()) {
       return next();
     } else {
-      // SEND FLASH MESSSAGE TO CLIENT
+      req.flash("error", "Admin must be logged in")
       res.redirect("/admin/home");
     }
   },

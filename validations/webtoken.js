@@ -1,6 +1,9 @@
 const redis = require("redis");
 const JWTR = require("jwt-redis").default;
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT
+});
 const jwtr = new JWTR(redisClient);
 //const jsonwebtoken = require("jsonwebtoken");
 

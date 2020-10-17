@@ -6,7 +6,7 @@
   "scripts": {
     "devbackend": "nodemon app.js",
     "buildbackend": "node app.js",
-    "frontend": "cd frontend && npm start",
+    "frontend": "cd frontend && npm install && npm start",
     "devconcur": "concurrently \"npm run devbackend\" \"npm run frontend\" ",
     "buildconcur": "concurrently \"npm run buildbackend\" \"npm run frontend\" "
 

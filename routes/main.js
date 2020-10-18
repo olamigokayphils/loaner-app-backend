@@ -5,6 +5,11 @@ const Loan = require("../models/Loan")
 
 const { loanApplicationValidationSchema } = require("../validations/validations");
 
+// ROUTE TO REACT FRONT-END
+router.get("/", (req, res)=>{
+  return res.render("frontend")
+})
+
 router.get("/dashboard", verifyToken, async (req, res) => {
   const existingUser = await User.findOne({ _id: req.user._id });
   const userLoanRecord = await Loan.find({ user: existingUser })

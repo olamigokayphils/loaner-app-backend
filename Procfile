@@ -1,1 +1,1 @@
-web: npm run buildconcur
+web: npm run build

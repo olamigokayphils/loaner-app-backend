@@ -4,7 +4,9 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const session = require("express-session");
+//const session = require("express-session");
+const session = require("cookie-session");
+
 const passport = require("passport");
 const flash = require("connect-flash")
 

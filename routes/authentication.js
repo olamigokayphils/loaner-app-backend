@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidationSchema, loginValidationSchema } = require("../validations/validations");
-const bcrpyt = require("bcrypt");
+const bcrpyt = require("bcryptjs");
 //const jsonwebtoken = require("jsonwebtoken");
 
 const redis = require("redis");

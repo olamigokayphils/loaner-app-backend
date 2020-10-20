@@ -4,8 +4,8 @@
   "description": "React Frontend App for Loaner",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --mode development --watch ./src/index.js  --output ../public/js/main.js",
-    "build": "webpack --mode production ./src/index.js  --output ../public/js/main.js"
+    "frontdev": "webpack --mode development --watch ./src/index.js  --output ../public/js/main.js",
+    "frontbuild": "webpack --mode production ./src/index.js  --output ../public/js/main.js"
   },
   "dependencies": {
     "axios": "^0.20.0",
